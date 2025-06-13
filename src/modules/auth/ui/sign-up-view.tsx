@@ -5,7 +5,7 @@ import Logo from "@/../public/logo.svg";
 import { AppName } from "./AppNameAuth";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Github, IceCream, OctagonAlertIcon } from "lucide-react";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SocialProviderButton } from "./socialProviderButton";
+import { OctagonAlertIcon } from "lucide-react";
 const formSchema = z
   .object({
     name: z.string().min(1, { message: "Name is required" }),
@@ -200,14 +201,14 @@ export function SignUpComponent() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <SocialProviderButton
-                    icon={<Github />}
+                    icon={<FaGoogle />}
                     isPending={isLoading}
                     name="Google"
                     onSocial={onSocial}
                     provider="google"
                   />
                   <SocialProviderButton
-                    icon={<Github />}
+                    icon={<FaGithub />}
                     isPending={isLoading}
                     name="Github"
                     onSocial={onSocial}
