@@ -31,7 +31,7 @@ const formSchema = z.object({
 export function SignInComponent() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,6 +51,9 @@ export function SignInComponent() {
         callbackURL: "/",
       },
       {
+        onSuccess() {
+          router.push("/");
+        },
         onRequest() {
           setIsLoading(true);
         },

@@ -46,18 +46,23 @@ export function SignUpComponent() {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (isLoading) return;
     setError("");
     setIsLoading(false);
-    await authClient.signIn.email(
+    await authClient.signUp.email(
       {
+        name: data.name,
         email: data.email,
         password: data.password,
         callbackURL: "/",
       },
       {
+        onSuccess() {
+          router.push("/");
+        },
         onRequest() {
           setIsLoading(true);
         },
