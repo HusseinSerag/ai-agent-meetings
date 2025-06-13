@@ -29,7 +29,6 @@ const formSchema = z.object({
   password: z.string().min(1, { message: "Password is required" }),
 });
 export function SignInComponent() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,16 +48,14 @@ export function SignInComponent() {
       {
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
-        onSuccess() {
-          router.push("/");
-        },
         onRequest() {
           setIsLoading(true);
         },
         onError(error) {
-          setError(error.error.message);
+          setError(error.error.message ?? error.error.statusText);
         },
         onResponse() {
           setIsLoading(false);
@@ -67,10 +64,29 @@ export function SignInComponent() {
     );
   };
 
-  const onReqSocial = () => {
-    setIsLoading(true);
+  const onSocial = async (provider: "github" | "google") => {
+    if (isLoading) return;
     setError("");
+    setIsLoading(false);
+    await authClient.signIn.social(
+      {
+        provider,
+        callbackURL: "/",
+      },
+      {
+        onRequest() {
+          setIsLoading(true);
+        },
+        onError(error) {
+          setError(error.error.message ?? error.error.statusText);
+        },
+        async onResponse(res) {
+          setIsLoading(false);
+        },
+      }
+    );
   };
+
   return (
     <div className="flex flex-col gap-6">
       <Card className="overflow-hidden p-0">
@@ -126,7 +142,11 @@ export function SignInComponent() {
                     <AlertTitle>{error}</AlertTitle>
                   </Alert>
                 )}
-                <Button type="submit" disabled={isLoading} className="w-full">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full cursor-pointer"
+                >
                   Sign in
                 </Button>
                 <div className="after:flex after:items-center after:border-t after:z-0 after:inset-0 after:top-1/2 text-center text-sm after:border-border relative after:absolute">
@@ -139,27 +159,15 @@ export function SignInComponent() {
                     icon={<Github />}
                     isPending={isLoading}
                     name="Google"
-                    onRequest={onReqSocial}
+                    onSocial={onSocial}
                     provider="google"
-                    onResponse={(data) => {
-                      if (data.error) {
-                        setError(data.error.message);
-                      }
-                      setIsLoading(false);
-                    }}
                   />
                   <SocialProviderButton
                     icon={<Github />}
                     isPending={isLoading}
                     name="Github"
-                    onRequest={onReqSocial}
+                    onSocial={onSocial}
                     provider="github"
-                    onResponse={(data) => {
-                      if (data.error) {
-                        setError(data.error.message);
-                      }
-                      setIsLoading(false);
-                    }}
                   />
                 </div>
                 <div className="text-center text-sm">

@@ -8,8 +8,9 @@ interface Props {
   provider: Parameters<typeof authClient.signIn.social>[0]["provider"];
   icon: ReactNode;
   name: string;
-  onRequest(): void;
-  onResponse(data: ReturnType<typeof authClient.signIn.email>): void;
+  onSocial(
+    provider: Parameters<typeof authClient.signIn.social>[0]["provider"]
+  ): void;
 }
 
 export function SocialProviderButton({
@@ -17,22 +18,16 @@ export function SocialProviderButton({
   isPending,
   icon,
   name,
-  onRequest,
-  onResponse,
+  onSocial,
 }: Props) {
   return (
     <Button
       variant={"outline"}
       type="button"
-      className="w-full flex items-center justify-center"
+      className="w-full flex items-center justify-center cursor-pointer"
       disabled={isPending}
-      onClick={async () => {
-        onRequest();
-        const data = await authClient.signIn.social({
-          provider,
-        });
-
-        onResponse(data);
+      onClick={() => {
+        onSocial(provider);
       }}
     >
       {icon} {name}
