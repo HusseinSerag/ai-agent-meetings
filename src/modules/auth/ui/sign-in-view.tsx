@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SocialProviderButton } from "./socialProviderButton";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -64,6 +65,11 @@ export function SignInComponent() {
         },
       }
     );
+  };
+
+  const onReqSocial = () => {
+    setIsLoading(true);
+    setError("");
   };
   return (
     <div className="flex flex-col gap-6">
@@ -129,21 +135,32 @@ export function SignInComponent() {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    variant={"outline"}
-                    type="button"
-                    className="w-full flex items-center"
-                  >
-                    <IceCream />
-                    Google
-                  </Button>
-                  <Button
-                    variant={"outline"}
-                    type="button"
-                    className="w-full flex items-center justify-center"
-                  >
-                    <Github /> Github
-                  </Button>
+                  <SocialProviderButton
+                    icon={<Github />}
+                    isPending={isLoading}
+                    name="Google"
+                    onRequest={onReqSocial}
+                    provider="google"
+                    onResponse={(data) => {
+                      if (data.error) {
+                        setError(data.error.message);
+                      }
+                      setIsLoading(false);
+                    }}
+                  />
+                  <SocialProviderButton
+                    icon={<Github />}
+                    isPending={isLoading}
+                    name="Github"
+                    onRequest={onReqSocial}
+                    provider="github"
+                    onResponse={(data) => {
+                      if (data.error) {
+                        setError(data.error.message);
+                      }
+                      setIsLoading(false);
+                    }}
+                  />
                 </div>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
