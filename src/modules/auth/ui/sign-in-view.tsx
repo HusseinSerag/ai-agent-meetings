@@ -5,7 +5,7 @@ import Logo from "@/../public/logo.svg";
 import { AppName } from "./AppNameAuth";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Github, IceCream, OctagonAlertIcon } from "lucide-react";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -22,16 +22,17 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SocialProviderButton } from "./socialProviderButton";
+import { OctagonAlertIcon } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, { message: "Password is required" }),
 });
 export function SignInComponent() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,6 +49,7 @@ export function SignInComponent() {
       {
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess() {
@@ -57,7 +59,7 @@ export function SignInComponent() {
           setIsLoading(true);
         },
         onError(error) {
-          setError(error.error.message);
+          setError(error.error.message ?? error.error.statusText);
         },
         onResponse() {
           setIsLoading(false);
@@ -65,6 +67,30 @@ export function SignInComponent() {
       }
     );
   };
+
+  const onSocial = async (provider: "github" | "google") => {
+    if (isLoading) return;
+    setError("");
+    setIsLoading(false);
+    await authClient.signIn.social(
+      {
+        provider,
+        callbackURL: "/",
+      },
+      {
+        onRequest() {
+          setIsLoading(true);
+        },
+        onError(error) {
+          setError(error.error.message ?? error.error.statusText);
+        },
+        async onResponse(res) {
+          setIsLoading(false);
+        },
+      }
+    );
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <Card className="overflow-hidden p-0">
@@ -120,7 +146,11 @@ export function SignInComponent() {
                     <AlertTitle>{error}</AlertTitle>
                   </Alert>
                 )}
-                <Button type="submit" disabled={isLoading} className="w-full">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full cursor-pointer"
+                >
                   Sign in
                 </Button>
                 <div className="after:flex after:items-center after:border-t after:z-0 after:inset-0 after:top-1/2 text-center text-sm after:border-border relative after:absolute">
@@ -129,21 +159,20 @@ export function SignInComponent() {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    variant={"outline"}
-                    type="button"
-                    className="w-full flex items-center"
-                  >
-                    <IceCream />
-                    Google
-                  </Button>
-                  <Button
-                    variant={"outline"}
-                    type="button"
-                    className="w-full flex items-center justify-center"
-                  >
-                    <Github /> Github
-                  </Button>
+                  <SocialProviderButton
+                    icon={<FaGoogle />}
+                    isPending={isLoading}
+                    name="Google"
+                    onSocial={onSocial}
+                    provider="google"
+                  />
+                  <SocialProviderButton
+                    icon={<FaGithub />}
+                    isPending={isLoading}
+                    name="Github"
+                    onSocial={onSocial}
+                    provider="github"
+                  />
                 </div>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
