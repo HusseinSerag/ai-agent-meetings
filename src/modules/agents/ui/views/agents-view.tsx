@@ -4,13 +4,19 @@ import { ErrorState } from "@/components/Error";
 import { LoadingState } from "@/components/Loading";
 
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export function AgentsView() {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions());
 
-  return <div></div>;
+  return (
+    <div>
+      {data.map((agent) => (
+        <div>{agent.name}</div>
+      ))}
+    </div>
+  );
 }
 
 export function AgentsLoading() {

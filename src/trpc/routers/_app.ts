@@ -1,5 +1,9 @@
-import { createTRPCRouter } from "../init";
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "../init";
 import { agentsRouter } from "@/modules/agents/server/procedures";
+import { db } from "@/db";
+import { agents } from "@/db/schema";
+import { eq } from "drizzle-orm";
 export const appRouter = createTRPCRouter({
   agents: agentsRouter,
 });
