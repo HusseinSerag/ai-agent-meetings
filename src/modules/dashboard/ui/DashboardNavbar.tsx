@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { PanelLeftCloseIcon, PanelLeftIcon, SearchIcon } from "lucide-react";
-import { DashboardCommand } from "../DashboardCommand";
+import { DashboardCommand } from "./DashboardCommand";
 import { useEffect, useState } from "react";
 
 export function DashboardNavbar() {

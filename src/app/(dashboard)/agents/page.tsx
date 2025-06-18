@@ -18,7 +18,7 @@ export default async function AgentsPage() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<AgentsLoading />}>
         <ErrorBoundary fallback={<AgentsError />}>
-          <AgentsView />;
+          <AgentsView />
         </ErrorBoundary>
       </Suspense>
     </HydrationBoundary>
