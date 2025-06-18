@@ -4,7 +4,7 @@ import { ErrorState } from "@/components/Error";
 import { LoadingState } from "@/components/Loading";
 
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 
 export function AgentsView() {
   const trpc = useTRPC();
