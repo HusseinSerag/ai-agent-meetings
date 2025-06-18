@@ -4,7 +4,7 @@ import { ErrorState } from "@/components/Error";
 import { LoadingState } from "@/components/Loading";
 
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { DataTable } from "../components/DataTable";
 import { columns } from "../components/Column";
 import { EmptyState } from "@/components/Empty";
@@ -20,6 +20,23 @@ export function AgentsView() {
       ...filters,
     })
   );
+  const queryClient = useQueryClient();
+  if (filters.page - 1 > 0) {
+    queryClient.prefetchQuery(
+      trpc.agents.getMany.queryOptions({
+        ...filters,
+        page: filters.page - 1,
+      })
+    );
+  }
+  if (filters.page + 1 <= data.totalPages) {
+    queryClient.prefetchQuery(
+      trpc.agents.getMany.queryOptions({
+        ...filters,
+        page: filters.page + 1,
+      })
+    );
+  }
   useEffect(
     function () {
       if (filters.page <= 0) {
