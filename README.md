@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧐 AI Agent Meetings
 
-## Getting Started
+> Next-gen AI-powered meetings with real-time agents, streaming, and deep integrations.
+> Built with bleeding-edge tech: Next.js 15, React 19, Tailwind v4, and more.
 
-First, run the development server:
+---
+
+## ✨ Overview
+
+**AI Agent Meetings** is a futuristic video conferencing platform that augments your calls with real-time AI agents. From live transcription to instant summaries, this app leverages powerful tools like OpenAI, Stream, Inngest, and more to transform the way you meet.
+
+---
+
+## 🔑 Key Features
+
+| Feature                        | Description                                                                |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| 🤖 **AI-Powered Video Calls**  | Invite custom AI agents to join, listen, and assist live in real-time.     |
+| 🧠 **Custom Real-Time Agents** | Train agents to act as note-takers, assistants, or expert advisors.        |
+| 📞 **Stream Video SDK**        | Smooth, low-latency video powered by [getstream.io](https://getstream.io). |
+| 💬 **Stream Chat SDK**         | Live chat integrated directly into the call room.                          |
+| 📝 **Summaries & Transcripts** | Automatic AI-generated call notes & searchable transcripts.                |
+| 📂 **Meeting History**         | View past meetings, recordings, and summaries anytime.                     |
+| 🔍 **Transcript Search**       | Find key moments in your meetings with powerful full-text search.          |
+| 📺 **Video Playback**          | Watch recorded sessions directly in the app.                               |
+| 💬 **AI Meeting Q\&A**         | Ask questions post-meeting and get answers from the transcript.            |
+| 🧠 **OpenAI Integration**      | Powered by GPT for summaries, Q\&A, and natural language understanding.    |
+| 💳 **Polar Subscriptions**     | Monetize with built-in subscription support.                               |
+| 🔐 **Better Auth**             | Secure login with Clerk/Auth.js (or your provider of choice).              |
+| 📱 **Mobile Responsive**       | Fully optimized experience across all screen sizes.                        |
+| 🌐 **Built with Next.js 15**   | Future-ready server components & streaming UI.                             |
+| 🎨 **Tailwind v4 + Shadcn/ui** | Clean, modern design with headless UI components.                          |
+| ⚙️ **Inngest Background Jobs** | Reliable async tasks and event-driven job orchestration.                   |
+
+---
+
+## 🧰 Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/), [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
+- **AI**: [OpenAI API](https://platform.openai.com/)
+- **Video & Chat**: [Stream Video & Chat SDKs](https://getstream.io/)
+- **Jobs**: [Inngest](https://www.inngest.com/)
+- **Auth**: [Clerk](https://clerk.com/) or [NextAuth.js](https://next-auth.js.org/)
+- **Payments**: [Polar](https://www.polar.sh/) for subscription support
+- **State/Data**: [tRPC](https://trpc.io/), [React Query](https://tanstack.com/query)
+- **Database**: Drizzle ORM + PostgreSQL
+- **Storage**: [UploadThing](https://uploadthing.com/) or custom
+
+---
+
+## 📦 Getting Started
+
+> Clone & run the project locally.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/HusseinSerag/ai-agent-meetings.git
+cd ai-agent-meetings
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> ✨ You’ll need environment variables for:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- OpenAI
+- Stream (Video + Chat)
+- Clerk or Auth provider
+- Inngest
+- Polar (for subscriptions)
+- PostgreSQL (e.g. via Neon or Supabase)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+apps/
+  web/             → Main Next.js 15 frontend
+  api/             → Server routes, background jobs, and API handlers
+  trpc/            → Type-safe backend logic shared across client/server
+  components/      → Shadcn-based reusable UI components
+  agents/          → AI logic, real-time agent handlers
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚒️ TODO / In Progress
 
-## Deploy on Vercel
+- [ ] ARIA/accessibility improvements
+- [ ] Custom agent training interface
+- [ ] Real-time multi-agent support
+- [ ] Polar webhook integration
+- [ ] Usage analytics dashboard
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 💬 Feedback & Contributions
+
+Pull requests and issues are welcome!
+For major feature suggestions, please [open a discussion](https://github.com/HusseinSerag/ai-agent-meetings/discussions).
+
+---
+
+## 🧠 Author
+
+**[@HusseinSerag](https://github.com/HusseinSerag)** – building powerful AI-first user experiences.
+
+---
+
+## 📝 License
+
+MIT ©MIT \xa9 Hussein Serag
