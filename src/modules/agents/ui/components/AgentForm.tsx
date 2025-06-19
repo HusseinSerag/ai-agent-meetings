@@ -38,6 +38,24 @@ export function AgentForm({
         await queryClient.invalidateQueries(
           trpc.agents.getMany.queryOptions({})
         );
+        // TODO: invalidate free tier usage
+        onSuccess?.();
+      },
+      onError(error) {
+        if (error.data?.code === "FORBIDDEN") {
+          router.push("/upgrade");
+          return;
+        }
+        toast.error(error.message);
+      },
+    })
+  );
+  const editAgent = useMutation(
+    trpc.agents.update.mutationOptions({
+      async onSuccess() {
+        await queryClient.invalidateQueries(
+          trpc.agents.getMany.queryOptions({})
+        );
         if (defaultValues?.id) {
           await queryClient.invalidateQueries(
             trpc.agents.getOne.queryOptions({
@@ -65,11 +83,15 @@ export function AgentForm({
     },
   });
   const isEditing = !!defaultValues?.id;
-  const isPending = createAgent.isPending;
+  const isPending = createAgent.isPending || editAgent.isPending;
 
   function onSubmit(values: z.infer<typeof agentsInsertSchema>) {
     if (isPending) return;
     if (isEditing) {
+      editAgent.mutate({
+        ...values,
+        id: defaultValues.id,
+      });
     } else {
       createAgent.mutate(values);
     }
