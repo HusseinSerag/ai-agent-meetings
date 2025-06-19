@@ -1,5 +1,9 @@
 import { ReactNode, useState } from "react";
-import { ChevronsUpDownIcon, LoaderCircleIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  ChevronsUpDownIcon,
+  LoaderCircleIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -19,6 +23,7 @@ interface Props {
   isSearchable?: boolean;
   className?: string;
   isLoadingOptions?: boolean;
+  error?: string;
 }
 
 export function CommandSelect({
@@ -29,6 +34,7 @@ export function CommandSelect({
   isSearchable,
   isLoadingOptions,
   onSearch,
+  error,
   placeholder = "Select an option",
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -58,32 +64,42 @@ export function CommandSelect({
         onOpenChange={setOpen}
       >
         <CommandInput placeholder="Search..." onValueChange={onSearch} />
-        <CommandList>
-          {!isLoadingOptions && (
-            <CommandEmpty>
-              <span className="text-muted-foreground text-sm">
-                No Options found
-              </span>
-            </CommandEmpty>
-          )}
-          {isLoadingOptions && (
-            <div className="px-2 py-4 flex justify-center items-center">
-              <LoaderCircleIcon className="animate-spin text-muted-foreground size-6" />
-            </div>
-          )}
-          {!isLoadingOptions &&
-            options.map((option) => (
-              <CommandItem
-                key={option.id}
-                onSelect={() => {
-                  onSelect(option.value);
-                  setOpen(false);
-                }}
-              >
-                {option.children}
-              </CommandItem>
-            ))}
-        </CommandList>
+        {error && (
+          <div className="flex items-center gap-x-2 py-4 justify-center">
+            <AlertCircleIcon className="size-5 text-red-500" />
+            <span className="text-sm font-medium text-red-600">
+              {error ?? "Error loading options"}
+            </span>
+          </div>
+        )}
+        {!error && (
+          <CommandList>
+            {!isLoadingOptions && (
+              <CommandEmpty>
+                <span className="text-muted-foreground text-sm">
+                  No Options found
+                </span>
+              </CommandEmpty>
+            )}
+            {isLoadingOptions && (
+              <div className="px-2 py-4 flex justify-center items-center">
+                <LoaderCircleIcon className="animate-spin text-muted-foreground size-6" />
+              </div>
+            )}
+            {!isLoadingOptions &&
+              options.map((option) => (
+                <CommandItem
+                  key={option.id}
+                  onSelect={() => {
+                    onSelect(option.value);
+                    setOpen(false);
+                  }}
+                >
+                  {option.children}
+                </CommandItem>
+              ))}
+          </CommandList>
+        )}
       </CommandResponsiveDialog>
     </>
   );

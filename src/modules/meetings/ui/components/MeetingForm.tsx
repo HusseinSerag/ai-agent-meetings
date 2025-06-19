@@ -140,6 +140,7 @@ export function MeetingsForm({
                 <FormLabel>Agents</FormLabel>
                 <FormControl>
                   <CommandSelect
+                    error={agents.error?.message}
                     isLoadingOptions={agents.isPending}
                     options={(agents.data?.items ?? []).map((agent) => ({
                       id: agent.id,

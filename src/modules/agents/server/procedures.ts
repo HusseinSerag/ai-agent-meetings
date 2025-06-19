@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { agents } from "@/db/schema";
+import { agents, meetings } from "@/db/schema";
 import {
   createTRPCRouter,
   baseProcedure,
@@ -81,12 +81,14 @@ export const agentsRouter = createTRPCRouter({
       const [agent] = await db
         .select({
           ...getTableColumns(agents),
-          meetingCount: sql<number>`5`,
+          meetingCount: sql<number>`COUNT(${meetings.id})`.as("meeting_count"),
         })
         .from(agents)
         .where(
           and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id))
-        );
+        )
+        .leftJoin(meetings, eq(agents.id, meetings.agentId))
+        .groupBy(agents.id);
       if (!agent) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -113,7 +115,9 @@ export const agentsRouter = createTRPCRouter({
         db
           .select({
             ...getTableColumns(agents),
-            meetingCount: sql<number>`5`,
+            meetingCount: sql<number>`COUNT(${meetings.id})`.as(
+              "meeting_count"
+            ),
           })
           .from(agents)
           .where(
@@ -122,6 +126,8 @@ export const agentsRouter = createTRPCRouter({
               search ? ilike(agents.name, `%${search}%`) : undefined
             )
           )
+          .leftJoin(meetings, eq(agents.id, meetings.agentId))
+          .groupBy(agents.id)
           .orderBy(desc(agents.createdAt), desc(agents.id))
           .limit(pageSize)
           .offset((page - 1) * pageSize),
