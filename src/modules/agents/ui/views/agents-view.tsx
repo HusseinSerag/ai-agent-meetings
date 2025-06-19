@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/Empty";
 import { useAgentFilters } from "../../hooks/useAgentsFilters";
 import { DataPagination } from "../components/DataPagination";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function AgentsView() {
   const trpc = useTRPC();
@@ -20,6 +21,7 @@ export function AgentsView() {
       ...filters,
     })
   );
+  const router = useRouter();
   const queryClient = useQueryClient();
   if (filters.page - 1 > 0) {
     queryClient.prefetchQuery(
@@ -49,7 +51,13 @@ export function AgentsView() {
   );
   return (
     <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-      <DataTable columns={columns} data={data.items} />
+      <DataTable
+        columns={columns}
+        data={data.items}
+        onRowClick={({ id }) => {
+          router.push(`/agents/${id}`);
+        }}
+      />
       <DataPagination
         page={filters.page}
         totalPages={data.totalPages}

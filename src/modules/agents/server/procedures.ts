@@ -36,14 +36,16 @@ export const agentsRouter = createTRPCRouter({
         id: z.string(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const [agent] = await db
         .select({
           ...getTableColumns(agents),
           meetingCount: sql<number>`5`,
         })
         .from(agents)
-        .where(eq(agents.id, input.id));
+        .where(
+          and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id))
+        );
       if (!agent) {
         throw new TRPCError({
           code: "NOT_FOUND",
