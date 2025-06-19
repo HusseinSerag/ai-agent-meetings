@@ -15,6 +15,7 @@ import {
   MeetingsLoading,
   MeetingsView,
 } from "@/modules/meetings/ui/views/MeetingsView";
+import { MeetingsListHeader } from "@/modules/meetings/ui/components/MeetingListHeader";
 interface Props {
   searchParams: Promise<SearchParams>;
 }
@@ -52,12 +53,15 @@ export default async function MeetingsPage({ searchParams }: Props) {
     })
   );
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<MeetingsLoading />}>
-        <ErrorBoundary fallback={<MeetingsError />}>
-          <MeetingsView />
-        </ErrorBoundary>
-      </Suspense>
-    </HydrationBoundary>
+    <>
+      <MeetingsListHeader />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense fallback={<MeetingsLoading />}>
+          <ErrorBoundary fallback={<MeetingsError />}>
+            <MeetingsView />
+          </ErrorBoundary>
+        </Suspense>
+      </HydrationBoundary>
+    </>
   );
 }
