@@ -4,8 +4,10 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { PanelLeftCloseIcon, PanelLeftIcon, SearchIcon } from "lucide-react";
 import { DashboardCommand } from "./DashboardCommand";
 import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export function DashboardNavbar() {
+  const { data, isPending } = authClient.useSession();
   const { isMobile, state, toggleSidebar } = useSidebar();
   const [open, setOpen] = useState(false);
 
@@ -21,7 +23,9 @@ export function DashboardNavbar() {
   }, []);
   return (
     <>
-      <DashboardCommand open={open} setOpen={setOpen} />
+      {!isPending && data && data.session && (
+        <DashboardCommand open={open} setOpen={setOpen} />
+      )}
       <nav className="flex px-4 gap-x-2 items-center py-3 border-b bg-background">
         <Button
           onClick={toggleSidebar}

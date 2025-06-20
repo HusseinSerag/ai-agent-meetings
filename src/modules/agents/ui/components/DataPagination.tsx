@@ -19,7 +19,7 @@ export function DataPagination({
   page,
   totalPages,
 }: DataPaginationProps) {
-  if (totalPages === 0) return null;
+  if (totalPages == 0) return null;
 
   const siblingsCount = 1;
   const pages: number[] = [];

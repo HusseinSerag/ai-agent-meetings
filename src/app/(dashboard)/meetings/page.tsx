@@ -30,7 +30,12 @@ export default async function MeetingsPage({ searchParams }: Props) {
   let params = await loadSeachParams(searchParams);
 
   const queryClient = getQueryClient();
-  const [count] = await getMeetingsCount(session.user.id, params.search);
+  const [count] = await getMeetingsCount(
+    session.user.id,
+    params.search,
+    params.status,
+    params.agentId
+  );
   checkIfRedirect(count.count, {
     page: params.page,
   });

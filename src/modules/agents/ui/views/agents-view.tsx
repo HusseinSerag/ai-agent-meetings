@@ -74,7 +74,7 @@ export function AgentsView() {
       />
       <DataPagination
         page={filters.page}
-        totalPages={data.totalPages}
+        totalPages={data.items.length == 0 ? 0 : data.totalPages}
         onPageChange={(page: number) => setFilters({ page })}
       />
       {!data.hasAgents && (

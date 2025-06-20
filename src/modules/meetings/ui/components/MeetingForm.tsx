@@ -42,6 +42,9 @@ export function MeetingsForm({
         await queryClient.invalidateQueries(
           trpc.meetings.getMany.queryOptions({})
         );
+        await queryClient.invalidateQueries(
+          trpc.dashboard.getData.queryOptions({})
+        );
         // TODO: invalidate free tier usage
         onSuccess?.(data.meetingId);
       },
@@ -68,6 +71,7 @@ export function MeetingsForm({
         await queryClient.invalidateQueries(
           trpc.meetings.getMany.queryOptions({})
         );
+        await trpc.dashboard.getData.queryOptions({});
         if (defaultValues?.id) {
           await queryClient.invalidateQueries(
             trpc.meetings.getOne.queryOptions({

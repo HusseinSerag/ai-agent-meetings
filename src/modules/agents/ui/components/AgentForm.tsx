@@ -38,6 +38,9 @@ export function AgentForm({
         await queryClient.invalidateQueries(
           trpc.agents.getMany.queryOptions({})
         );
+        await queryClient.invalidateQueries(
+          trpc.dashboard.getData.queryOptions({})
+        );
         // TODO: invalidate free tier usage
         onSuccess?.();
       },
@@ -55,6 +58,9 @@ export function AgentForm({
       async onSuccess() {
         await queryClient.invalidateQueries(
           trpc.agents.getMany.queryOptions({})
+        );
+        await queryClient.invalidateQueries(
+          trpc.dashboard.getData.queryOptions({})
         );
         if (defaultValues?.id) {
           await queryClient.invalidateQueries(

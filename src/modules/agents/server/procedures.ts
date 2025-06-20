@@ -108,7 +108,7 @@ export const agentsRouter = createTRPCRouter({
   getMany: protectedProcedure
     .input(
       z.object({
-        page: z.number().default(DEFAULT_PAGE),
+        page: z.number().min(1).default(DEFAULT_PAGE),
         pageSize: z
           .number()
           .min(MIN_PAGE_SIZE)

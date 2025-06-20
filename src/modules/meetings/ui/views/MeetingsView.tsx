@@ -11,6 +11,8 @@ import { columns } from "../components/Column";
 import { EmptyState } from "@/components/Empty";
 import { DataPagination } from "@/modules/agents/ui/components/DataPagination";
 import { DEFAULT_PAGE } from "@/constants";
+import { MeetingStatus } from "../../types";
+import { useRouter } from "next/navigation";
 
 export function MeetingsView() {
   const [filters, setFilters] = useMeetingsFilters();
@@ -21,6 +23,7 @@ export function MeetingsView() {
       ...filters,
     })
   );
+
   const queryClient = useQueryClient();
   if (filters.page - 1 > 0) {
     queryClient.prefetchQuery(
@@ -56,19 +59,34 @@ export function MeetingsView() {
     },
     [filters.page, data.totalPages]
   );
+  const router = useRouter();
   return (
     <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-      <DataTable columns={columns} data={data.items} />
+      <DataTable
+        columns={columns}
+        onRowClick={(row) => {
+          router.push(`/meetings/${row.id}`);
+        }}
+        data={data.items}
+      />
       <DataPagination
         page={filters.page}
-        totalPages={data.totalPages}
+        totalPages={data.items.length == 0 ? 0 : data.totalPages}
         onPageChange={(page: number) => setFilters({ page })}
       />
-      {data.items.length === 0 && (
+      {!data.hasMeetings && (
         <EmptyState
           title="Create your first meeting."
           description="Schedule a meeting to connect with others. Each meeting lets you collaborate, share ideas, and interact with participants in real time."
         />
+      )}
+      {data.items.length == 0 && data.hasMeetings && (
+        <>
+          <EmptyState
+            title="Can't find your wanted agent?"
+            description="Schedule a meeting to connect with others. Each meeting lets you collaborate, share ideas, and interact with participants in real time."
+          />
+        </>
       )}
     </div>
   );
