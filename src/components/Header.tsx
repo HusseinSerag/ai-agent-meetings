@@ -19,26 +19,30 @@ import {
   DropdownMenuItem,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-interface SingleAgentHeaderProps {
-  agentId: string;
-  agentName: string;
+interface HeaderProps {
+  name: string;
   onEdit: () => void;
   onDelete: () => void;
+  breadCrumbLink: string;
+  breadCrumbTitle: string;
+  currentPageLink: string;
 }
 
-export function SingleAgentHeader({
-  agentId,
-  agentName,
+export function Header({
+  name,
   onEdit,
   onDelete,
-}: SingleAgentHeaderProps) {
+  breadCrumbLink,
+  breadCrumbTitle,
+  currentPageLink,
+}: HeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild className="font-medium text-xl">
-              <Link href={"/agents"}>My Agents</Link>
+              <Link href={breadCrumbLink}>{breadCrumbTitle}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-foreground text-xl font-medium [&>svg]:size-4">
@@ -49,7 +53,7 @@ export function SingleAgentHeader({
               asChild
               className="font-medium text-foreground text-xl"
             >
-              <Link href={`/agents/${agentId}`}>{agentName}</Link>
+              <Link href={currentPageLink}>{name}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>

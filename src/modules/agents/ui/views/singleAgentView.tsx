@@ -6,7 +6,6 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { SingleAgentHeader } from "../components/SingleAgentHeader";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { Badge } from "@/components/ui/badge";
 import { VideoIcon } from "lucide-react";
@@ -15,6 +14,7 @@ import { toast } from "sonner";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useState } from "react";
 import { UpdateSingleAgentDialog } from "../components/UpdateSingleAgentDialog";
+import { Header } from "@/components/Header";
 
 interface Props {
   agentId: string;
@@ -35,6 +35,9 @@ export function SingleAgentView({ agentId }: Props) {
       async onSuccess() {
         await queryClient.invalidateQueries(
           trpc.agents.getMany.queryOptions({})
+        );
+        await queryClient.invalidateQueries(
+          trpc.dashboard.getData.queryOptions({})
         );
         // TODO invalidate
         router.push("/agents");
@@ -65,16 +68,19 @@ export function SingleAgentView({ agentId }: Props) {
         initialValues={data}
       />
       <div className="flex-1 py-4 px-3 md:px-8 flex flex-col gap-y-4">
-        <SingleAgentHeader
+        <Header
           onDelete={() => {
             handlerRemoveAgent();
           }}
-          agentId={agentId}
-          agentName={data.name}
           onEdit={() => {
             setEditAgentDialogOpen(true);
           }}
+          breadCrumbLink="/agents"
+          breadCrumbTitle="My Agents"
+          currentPageLink={`/agents/${agentId}`}
+          name={data.name}
         />
+
         <div className="bg-white rounded-lg border">
           <div className="px-4 py-5 gap-y-5 flex flex-col">
             <div className="flex items-center gap-x-3">

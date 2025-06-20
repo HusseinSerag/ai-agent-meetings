@@ -71,7 +71,9 @@ export function MeetingsForm({
         await queryClient.invalidateQueries(
           trpc.meetings.getMany.queryOptions({})
         );
-        await trpc.dashboard.getData.queryOptions({});
+        await queryClient.invalidateQueries(
+          trpc.dashboard.getData.queryOptions({})
+        );
         if (defaultValues?.id) {
           await queryClient.invalidateQueries(
             trpc.meetings.getOne.queryOptions({
