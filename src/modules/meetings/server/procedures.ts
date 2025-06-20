@@ -33,6 +33,14 @@ export async function getMeetingsCount(
       )
     );
 }
+export async function getTotalMeetingsOfUser(id: string) {
+  return db
+    .select({
+      count: count(),
+    })
+    .from(meetings)
+    .where(eq(meetings.userId, id));
+}
 export const meetingsRouter = createTRPCRouter({
   update: protectedProcedure
     .input(meetingsUpdateSchema)
@@ -86,13 +94,13 @@ export const meetingsRouter = createTRPCRouter({
       const [meeting] = await db
         .select({
           ...getTableColumns(meetings),
-          agent: agents,
-          duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as(
-            "duration"
-          ),
+          // agent: agents,
+          // duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as(
+          //   "duration"
+          // ),
         })
         .from(meetings)
-        .innerJoin(agents, eq(meetings.agentId, agents.id))
+
         .where(
           and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id))
         );
@@ -118,7 +126,7 @@ export const meetingsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;
-      const [data, total] = await Promise.all([
+      const [data, total, meetingCount] = await Promise.all([
         db
           .select({
             ...getTableColumns(meetings),
@@ -140,6 +148,7 @@ export const meetingsRouter = createTRPCRouter({
           .limit(pageSize)
           .offset((page - 1) * pageSize),
         getMeetingsCount(ctx.auth.user.id, search),
+        db.select().from(meetings).where(eq(meetings.userId, ctx.auth.user.id)),
       ]);
 
       const totalPages = Math.ceil(total[0].count / pageSize);
@@ -147,6 +156,7 @@ export const meetingsRouter = createTRPCRouter({
         items: data,
         total: total[0].count,
         totalPages,
+        hasMeetings: meetingCount.length > 0,
       };
     }),
 });

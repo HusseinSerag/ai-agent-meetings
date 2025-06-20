@@ -1,7 +1,12 @@
+import { SharedDialogOpenerProvider } from "@/components/context/SharedDialogOpenerProvider";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
 import { auth } from "@/lib/auth";
+import { checkIfRedirect } from "@/lib/wrong-page-redirect";
 import { loadSeachParams } from "@/modules/agents/params";
-import { getAgentCount } from "@/modules/agents/server/procedures";
+import {
+  getAgentCount,
+  getTotalAgentOfUser,
+} from "@/modules/agents/server/procedures";
 import { AgentsListHeader } from "@/modules/agents/ui/components/ListHeader";
 import {
   AgentsError,
@@ -31,23 +36,12 @@ export default async function AgentsPage({ searchParams }: Props) {
   let params = await loadSeachParams(searchParams);
 
   const queryClient = getQueryClient();
-  const [count] = await getAgentCount(session.user.id, params.search);
-  const totalPages = Math.ceil(count.count / DEFAULT_PAGE_SIZE);
-  const correctedPage =
-    params.page <= 0
-      ? DEFAULT_PAGE
-      : params.page > totalPages
-      ? totalPages
-      : params.page;
 
-  if (params.page !== correctedPage) {
-    const newParams = new URLSearchParams();
-    for (let key in params) {
-      newParams.set(key, String(params[key as keyof typeof params]));
-    }
-    newParams.set("page", correctedPage.toString());
-    redirect(`?${newParams.toString()}`);
-  }
+  const [count] = await getAgentCount(session.user.id, params.search);
+
+  checkIfRedirect(count.count, {
+    page: params.page,
+  });
   // prefetch data on server
   void queryClient.prefetchQuery(
     trpc.agents.getMany.queryOptions({
@@ -55,7 +49,7 @@ export default async function AgentsPage({ searchParams }: Props) {
     })
   );
   return (
-    <>
+    <SharedDialogOpenerProvider>
       <AgentsListHeader />
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<AgentsLoading />}>
@@ -64,6 +58,6 @@ export default async function AgentsPage({ searchParams }: Props) {
           </ErrorBoundary>
         </Suspense>
       </HydrationBoundary>
-    </>
+    </SharedDialogOpenerProvider>
   );
 }

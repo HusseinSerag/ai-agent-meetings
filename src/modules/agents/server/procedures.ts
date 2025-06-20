@@ -16,6 +16,14 @@ import {
   MIN_PAGE_SIZE,
 } from "@/constants";
 
+export async function getTotalAgentOfUser(id: string) {
+  return db
+    .select({
+      count: count(),
+    })
+    .from(agents)
+    .where(eq(agents.userId, id));
+}
 export async function getAgentCount(id: string, searchQuery?: string | null) {
   return db
     .select({
@@ -111,7 +119,7 @@ export const agentsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;
-      const [data, total] = await Promise.all([
+      const [data, total, totalAgents] = await Promise.all([
         db
           .select({
             ...getTableColumns(agents),
@@ -132,6 +140,7 @@ export const agentsRouter = createTRPCRouter({
           .limit(pageSize)
           .offset((page - 1) * pageSize),
         getAgentCount(ctx.auth.user.id, search),
+        db.select().from(agents).where(eq(agents.userId, ctx.auth.user.id)),
       ]);
 
       const totalPages = Math.ceil(total[0].count / pageSize);
@@ -139,6 +148,7 @@ export const agentsRouter = createTRPCRouter({
         items: data,
         total: total[0].count,
         totalPages,
+        hasAgents: totalAgents.length > 0,
       };
     }),
   create: protectedProcedure

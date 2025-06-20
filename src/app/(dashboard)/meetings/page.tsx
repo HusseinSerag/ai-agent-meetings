@@ -16,6 +16,7 @@ import {
   MeetingsView,
 } from "@/modules/meetings/ui/views/MeetingsView";
 import { MeetingsListHeader } from "@/modules/meetings/ui/components/MeetingListHeader";
+import { checkIfRedirect } from "@/lib/wrong-page-redirect";
 interface Props {
   searchParams: Promise<SearchParams>;
 }
@@ -30,22 +31,9 @@ export default async function MeetingsPage({ searchParams }: Props) {
 
   const queryClient = getQueryClient();
   const [count] = await getMeetingsCount(session.user.id, params.search);
-  const totalPages = Math.ceil(count.count / DEFAULT_PAGE_SIZE);
-  const correctedPage =
-    params.page <= 0
-      ? DEFAULT_PAGE
-      : params.page > totalPages
-      ? totalPages
-      : params.page;
-
-  if (params.page !== correctedPage) {
-    const newParams = new URLSearchParams();
-    for (let key in params) {
-      newParams.set(key, String(params[key as keyof typeof params]));
-    }
-    newParams.set("page", correctedPage.toString());
-    redirect(`?${newParams.toString()}`);
-  }
+  checkIfRedirect(count.count, {
+    page: params.page,
+  });
   // prefetch data on server
   void queryClient.prefetchQuery(
     trpc.meetings.getMany.queryOptions({

@@ -6,9 +6,11 @@ import { useState } from "react";
 import { useAgentFilters } from "../../hooks/useAgentsFilters";
 import { SearchFilter } from "./agentSearchFilters";
 import { DEFAULT_PAGE } from "@/constants";
+import { useDialogOpener } from "@/components/context/SharedDialogOpenerProvider";
 
 export function AgentsListHeader() {
-  const [open, setOpen] = useState(false);
+  const { isCreateAgentOpen: open, toggleIsCreateAgentOpen: setOpen } =
+    useDialogOpener();
   const [filters, setFilters] = useAgentFilters();
   const isFiltersOn = !!filters.search;
 
