@@ -9,8 +9,10 @@ import {
 } from "@stream-io/node-sdk";
 import { db } from "@/db";
 import { NextRequest, NextResponse } from "next/server";
-import { agents, meetings } from "@/db/schema";
+import { agents, meetings, user } from "@/db/schema";
 import { streamVideo } from "@/lib/stream-video";
+import { sendEmail } from "@/lib/mailer";
+import { inngest } from "@/inngest/client";
 
 function verifySignWithSDK(body: string, sign: string) {
   return streamVideo.verifyWebhook(body, sign);
@@ -138,6 +140,123 @@ export async function POST(req: NextRequest) {
     }
     const call = streamVideo.video.call("default", meetingId);
     await call.end();
+  } else if (eventType === "call.session_ended") {
+    const event = payload as CallEndedEvent;
+    const meetingId = event.call.custom?.meetingId;
+    if (!meetingId) {
+      return NextResponse.json(
+        {
+          error: "Missing meetingId",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+    await db
+      .update(meetings)
+      .set({
+        status: "processing",
+        endedAt: new Date(),
+      })
+      .where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")));
+  } else if (eventType === "call.transcription_ready") {
+    const event = payload as CallTranscriptionReadyEvent;
+    const meetingId = event.call_cid.split(":")[1];
+
+    if (!meetingId) {
+      return NextResponse.json(
+        {
+          error: "Missing meetingId",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+    const [updatedMeeting] = await db
+      .update(meetings)
+      .set({
+        transcriptUrl: event.call_transcription.url,
+      })
+      .where(eq(meetings.id, meetingId))
+      .returning();
+
+    if (!updatedMeeting) {
+      return NextResponse.json(
+        {
+          error: "Meeting not found!",
+        },
+        {
+          status: 404,
+        }
+      );
+
+      // send email to user that transcript is ready
+    }
+    await inngest.send({
+      name: "meetings/processing",
+      data: {
+        meetingId: updatedMeeting.id,
+        transcriptUrl: updatedMeeting.transcriptUrl,
+      },
+    });
+    const [userInfo] = await db
+      .select({
+        email: user.email,
+        name: user.name,
+      })
+      .from(user)
+      .where(eq(user.id, updatedMeeting.userId));
+    sendEmail(userInfo.email, "Transcript Ready", "confirmation-email", {
+      content: "transcript",
+      name: userInfo.name,
+      url: updatedMeeting.transcriptUrl,
+    });
+    // send email to user
+  } else if (eventType === "call.recording_ready") {
+    const event = payload as CallRecordingReadyEvent;
+    const meetingId = event.call_cid.split(":")[1];
+    if (!meetingId) {
+      return NextResponse.json(
+        {
+          error: "Missing meetingId",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+    const [updatedMeeting] = await db
+      .update(meetings)
+      .set({
+        recordingUrl: event.call_recording.url,
+      })
+      .where(eq(meetings.id, meetingId))
+      .returning();
+    if (!updatedMeeting) {
+      return NextResponse.json(
+        {
+          error: "Meeting not found!",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+    // send email to user that recording is ready
+    const [userInfo] = await db
+      .select({
+        email: user.email,
+        name: user.name,
+      })
+      .from(user)
+      .where(eq(user.id, updatedMeeting.userId));
+    sendEmail(userInfo.email, "Recording Ready", "confirmation-email", {
+      content: "recording",
+      name: userInfo.name,
+      url: updatedMeeting.recordingUrl,
+    });
   }
 
   return NextResponse.json({
