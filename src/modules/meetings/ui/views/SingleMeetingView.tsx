@@ -13,6 +13,10 @@ import { MeetingsForm } from "../components/MeetingForm";
 import { UpdateSingleMeetingDialog } from "../components/UpdateSingleMeetingDialog";
 import { useState } from "react";
 import { toast } from "sonner";
+import { UpcomingState } from "../components/UpcomingState";
+import { ActiveState } from "../components/ActiveState";
+import { CancelledState } from "../components/CancelledState";
+import { ProcessingState } from "../components/ProcessingState";
 interface SingleMeetingViewProps {
   meetingId: string;
 }
@@ -58,6 +62,7 @@ export function SingleMeetingView({ meetingId }: SingleMeetingViewProps) {
     });
   }
   const [openDialog, setOpenDialog] = useState(false);
+
   return (
     <>
       <RemoveConfirmation />
@@ -79,7 +84,17 @@ export function SingleMeetingView({ meetingId }: SingleMeetingViewProps) {
           currentPageLink={`/meetings/${meetingId}`}
           name={data.name}
         />
-        {data.name}
+        {data.status === "cancelled" && <CancelledState />}
+        {data.status === "upcoming" && (
+          <UpcomingState
+            isCancelling={false}
+            onCancelMeeting={() => {}}
+            meetingId={meetingId}
+          />
+        )}
+        {data.status === "processing" && <ProcessingState />}
+        {data.status === "active" && <ActiveState meetingId={meetingId} />}
+        {data.status === "completed" && <div>completed</div>}
       </div>
     </>
   );
