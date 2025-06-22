@@ -31,10 +31,10 @@ export function UpcomingState({
         </Button>
         <Button disabled={isCancelling} className="w-full lg:w-auto" asChild>
           {isCancelling ? (
-            <>
+            <div>
               <VideoIcon />
               Start meeting
-            </>
+            </div>
           ) : (
             <Link href={`/call/${meetingId}`}>
               <VideoIcon />
