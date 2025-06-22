@@ -3,7 +3,6 @@ import { useState } from "react";
 import { CallLobby } from "./CallLobby";
 import { CallActive } from "./CallActive";
 import { CallEnded } from "./CallEnded";
-import { useTRPC } from "@/trpc/client";
 
 interface Props {
   meetingName: string;

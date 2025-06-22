@@ -17,6 +17,7 @@ import { UpcomingState } from "../components/UpcomingState";
 import { ActiveState } from "../components/ActiveState";
 import { CancelledState } from "../components/CancelledState";
 import { ProcessingState } from "../components/ProcessingState";
+import { CompletedState } from "../components/CompletedState";
 interface SingleMeetingViewProps {
   meetingId: string;
 }
@@ -54,6 +55,38 @@ export function SingleMeetingView({ meetingId }: SingleMeetingViewProps) {
     "Are you sure?",
     `The following action will remove this meeting`
   );
+  const [CancelMeetingConfirmation, confirmCancel] = useConfirm(
+    "Are you sure you want to cancel this meeting?",
+    "The following action will cancel this meeting!"
+  );
+  const cancelMeeting = useMutation(
+    trpc.meetings.update.mutationOptions({
+      async onSuccess() {
+        await queryClient.invalidateQueries(
+          trpc.agents.getMany.queryOptions({})
+        );
+        await queryClient.invalidateQueries(
+          trpc.dashboard.getData.queryOptions({})
+        );
+        await queryClient.invalidateQueries(
+          trpc.meetings.getMany.queryOptions({})
+        );
+      },
+      onError(error) {
+        toast.error(error.message);
+      },
+    })
+  );
+  async function handleCancel() {
+    const res = await confirmCancel();
+    if (!res) return;
+    cancelMeeting.mutate({
+      id: meetingId,
+      agentId: data.agentId,
+      name: data.name,
+      status: "cancelled",
+    });
+  }
   async function handleDelete() {
     const res = await confirmRemove();
     if (!res) return;
@@ -66,6 +99,7 @@ export function SingleMeetingView({ meetingId }: SingleMeetingViewProps) {
   return (
     <>
       <RemoveConfirmation />
+      <CancelMeetingConfirmation />
       <UpdateSingleMeetingDialog
         open={openDialog}
         initialValues={data}
@@ -87,14 +121,16 @@ export function SingleMeetingView({ meetingId }: SingleMeetingViewProps) {
         {data.status === "cancelled" && <CancelledState />}
         {data.status === "upcoming" && (
           <UpcomingState
-            isCancelling={false}
-            onCancelMeeting={() => {}}
+            isCancelling={cancelMeeting.isPending}
+            onCancelMeeting={() => {
+              handleCancel();
+            }}
             meetingId={meetingId}
           />
         )}
         {data.status === "processing" && <ProcessingState />}
         {data.status === "active" && <ActiveState meetingId={meetingId} />}
-        {data.status === "completed" && <div>completed</div>}
+        {data.status === "completed" && <CompletedState data={data} />}
       </div>
     </>
   );

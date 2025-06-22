@@ -147,6 +147,7 @@ export const meetingsRouter = createTRPCRouter({
           },
         },
       });
+
       const [existingAgent] = await db
         .select()
         .from(agents)

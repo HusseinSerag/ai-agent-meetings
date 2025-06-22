@@ -7,4 +7,7 @@ export const meetingsInsertSchema = z.object({
 
 export const meetingsUpdateSchema = meetingsInsertSchema.extend({
   id: z.string().min(1, "id is required"),
+  status: z
+    .enum(["cancelled", "completed", "active", "processing", "upcoming"])
+    .optional(),
 });
