@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Row } from "react-day-picker";
 import { formatDuration } from "../../utils";
 import { Transcript } from "./Transcript";
+import { ChatProvider } from "./ChatProvider";
 
 interface Props {
   data: MeetingGetSingle;
@@ -61,6 +62,9 @@ export function CompletedState({ data }: Props) {
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
+        <TabsContent value="chat">
+          <ChatProvider meetingId={data.id} meetingName={data.name} />
+        </TabsContent>
         <TabsContent value="transcript">
           <Transcript meetingId={data.id} />
         </TabsContent>

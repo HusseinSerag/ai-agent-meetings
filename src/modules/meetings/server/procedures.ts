@@ -24,6 +24,7 @@ import { MeetingStatus, StreamTranscriptItem } from "../types";
 import { streamVideo } from "@/lib/stream-video";
 import { generateAvatarUri } from "@/lib/avatar";
 import JSONL from "jsonl-parse-stringify";
+import { streamChat } from "@/lib/stream-chat";
 
 export async function getMeetingsCount(
   id: string,
@@ -55,6 +56,14 @@ export async function getTotalMeetingsOfUser(id: string) {
     .where(eq(meetings.userId, id));
 }
 export const meetingsRouter = createTRPCRouter({
+  generateChatToken: protectedProcedure.mutation(async ({ ctx }) => {
+    const token = streamChat.createToken(ctx.auth.user.id);
+    await streamChat.upsertUser({
+      id: ctx.auth.user.id,
+      role: "admin",
+    });
+    return token;
+  }),
   getTranscript: protectedProcedure
     .input(
       z.object({
