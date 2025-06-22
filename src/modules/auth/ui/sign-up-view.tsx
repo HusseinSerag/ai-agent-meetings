@@ -168,7 +168,7 @@ export function SignUpComponent() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
                           <Input
                             type="password"
