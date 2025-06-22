@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Row } from "react-day-picker";
 import { formatDuration } from "../../utils";
+import { Transcript } from "./Transcript";
 
 interface Props {
   data: MeetingGetSingle;
@@ -60,6 +61,9 @@ export function CompletedState({ data }: Props) {
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
+        <TabsContent value="transcript">
+          <Transcript meetingId={data.id} />
+        </TabsContent>
         <TabsContent value="recording">
           <div className="bg-white rounded-lg border px-4 py-5">
             <video
