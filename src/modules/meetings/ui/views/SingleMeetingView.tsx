@@ -71,6 +71,9 @@ export function SingleMeetingView({ meetingId }: SingleMeetingViewProps) {
         await queryClient.invalidateQueries(
           trpc.meetings.getMany.queryOptions({})
         );
+        await queryClient.invalidateQueries(
+          trpc.premium.getFreeUsage.queryOptions()
+        );
       },
       onError(error) {
         toast.error(error.message);

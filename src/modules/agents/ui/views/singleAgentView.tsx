@@ -39,7 +39,10 @@ export function SingleAgentView({ agentId }: Props) {
         await queryClient.invalidateQueries(
           trpc.dashboard.getData.queryOptions({})
         );
-        // TODO invalidate
+
+        await queryClient.invalidateQueries(
+          trpc.premium.getFreeUsage.queryOptions()
+        );
         router.push("/agents");
       },
       onError(error) {

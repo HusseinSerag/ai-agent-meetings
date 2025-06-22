@@ -42,14 +42,17 @@ export function AgentForm({
           trpc.dashboard.getData.queryOptions({})
         );
         // TODO: invalidate free tier usage
+        await queryClient.invalidateQueries(
+          trpc.premium.getFreeUsage.queryOptions()
+        );
         onSuccess?.();
       },
       onError(error) {
+        toast.error(error.message);
         if (error.data?.code === "FORBIDDEN") {
           router.push("/upgrade");
           return;
         }
-        toast.error(error.message);
       },
     })
   );

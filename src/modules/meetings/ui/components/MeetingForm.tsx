@@ -46,12 +46,14 @@ export function MeetingsForm({
           trpc.dashboard.getData.queryOptions({})
         );
         // TODO: invalidate free tier usage
+        await queryClient.invalidateQueries(
+          trpc.premium.getFreeUsage.queryOptions()
+        );
         onSuccess?.(data.meetingId);
       },
       onError(error) {
         if (error.data?.code === "FORBIDDEN") {
           router.push("/upgrade");
-          return;
         }
         toast.error(error.message);
       },

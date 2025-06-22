@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   baseProcedure,
   protectedProcedure,
+  premiumProcedure,
 } from "@/trpc/init";
 import { agentsInsertSchema, agentsUpdateSchema } from "../schemas";
 import { z } from "zod";
@@ -37,6 +38,21 @@ export async function getAgentCount(id: string, searchQuery?: string | null) {
       )
     );
 }
+
+/*
+await streamVideo.upsertUsers([
+        {
+          id: existingAgent.id,
+          name: existingAgent.name,
+          role: "user",
+          image: generateAvatarUri({
+            seed: existingAgent.name,
+            variant: "botttsNeutral",
+          }),
+        },
+      ]);
+
+*/
 export const agentsRouter = createTRPCRouter({
   update: protectedProcedure
     .input(agentsUpdateSchema)
@@ -151,7 +167,7 @@ export const agentsRouter = createTRPCRouter({
         hasAgents: totalAgents.length > 0,
       };
     }),
-  create: protectedProcedure
+  create: premiumProcedure("agents")
     .input(agentsInsertSchema)
     .mutation(async ({ ctx, input }) => {
       const { instructions, name } = input;
